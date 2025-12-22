@@ -1,25 +1,25 @@
-"use client"
+'use client';
 
-import { BetterAuthActionButton } from "@/components/auth/better-auth-action-button"
-import { Button } from "@/components/ui/button"
-import { authClient } from "@/lib/auth/auth-client"
-import Link from "next/link"
-import { useEffect, useState } from "react"
+import { BetterAuthActionButton } from '@/components/auth/better-auth-action-button';
+import { Button } from '@/components/ui/button';
+import { authClient } from '@/lib/auth/auth-client';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function Home() {
-  const [hasAdminPermission, setHasAdminPermission] = useState(false)
-  const { data: session, isPending: loading } = authClient.useSession()
+  const [hasAdminPermission, setHasAdminPermission] = useState(false);
+  const { data: session, isPending: loading } = authClient.useSession();
 
   useEffect(() => {
     authClient.admin
-      .hasPermission({ permission: { user: ["list"] } })
+      .hasPermission({ permission: { user: ['list'] } })
       .then(({ data }) => {
-        setHasAdminPermission(data?.success ?? false)
-      })
-  }, [])
+        setHasAdminPermission(data?.success ?? false);
+      });
+  }, []);
 
   if (loading) {
-    return <div>Loading...</div>
+    return <div>Loading...</div>;
   }
 
   return (
@@ -59,5 +59,5 @@ export default function Home() {
         )}
       </div>
     </div>
-  )
+  );
 }

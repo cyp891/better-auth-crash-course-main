@@ -20,8 +20,8 @@ import Stripe from 'stripe';
 import { STRIPE_PLANS } from './stripe';
 
 const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-08-27.basil',
-});
+    apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
+})
 
 export const auth = betterAuth({
   appName: 'Better Auth Demo',
@@ -162,7 +162,7 @@ export const auth = betterAuth({
   databaseHooks: {
     session: {
       create: {
-        before: async (userSession) => {
+        before: async (userSession, ctx) => {
           const membership = await db.query.member.findFirst({
             where: eq(member.userId, userSession.userId),
             orderBy: desc(member.createdAt),

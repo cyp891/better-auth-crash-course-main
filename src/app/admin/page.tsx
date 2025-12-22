@@ -4,35 +4,40 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from '@/components/ui/card';
 import {
   Table,
   TableBody,
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { auth } from "@/lib/auth/auth"
-import { ArrowLeft, Users } from "lucide-react"
-import { headers } from "next/headers"
-import Link from "next/link"
-import { redirect } from "next/navigation"
-import { UserRow } from "./_components/user-row"
+} from '@/components/ui/table';
+import { auth } from '@/lib/auth/auth';
+import { ArrowLeft, Users } from 'lucide-react';
+import { headers } from 'next/headers';
+import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { UserRow } from './_components/user-row';
 
 export default async function AdminPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-
-  if (session == null) return redirect("/auth/login")
-  const hasAccess = await auth.api.userHasPermission({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const session = await (auth as any).api.getSession({
     headers: await headers(),
-    body: { permission: { user: ["list"] } },
-  })
-  if (!hasAccess.success) return redirect("/")
+  });
 
-  const users = await auth.api.listUsers({
+  if (session == null) return redirect('/auth/login');
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const hasAccess = await (auth as any).api.userHasPermission({
     headers: await headers(),
-    query: { limit: 100, sortBy: "createdAt", sortDirection: "desc" },
-  })
+    body: { permission: { user: ['list'] } },
+  });
+  if (!hasAccess.success) return redirect('/');
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const users = await (auth as any).api.listUsers({
+    headers: await headers(),
+    query: { limit: 100, sortBy: 'createdAt', sortDirection: 'desc' },
+  });
 
   return (
     <div className="mx-auto container my-6 px-4">
@@ -63,7 +68,8 @@ export default async function AdminPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {users.users.map(user => (
+                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                {users.users.map((user: any) => (
                   <UserRow key={user.id} user={user} selfId={session.user.id} />
                 ))}
               </TableBody>
@@ -72,5 +78,5 @@ export default async function AdminPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
