@@ -19,9 +19,20 @@ import { stripe } from '@better-auth/stripe';
 import Stripe from 'stripe';
 import { STRIPE_PLANS } from './stripe';
 
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-    apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
-})
+// Lazy initialization of Stripe client to avoid errors during build
+let stripeClientInstance: Stripe | null = null;
+
+function getStripeClient(): Stripe {
+  if (!stripeClientInstance) {
+    if (!process.env.STRIPE_SECRET_KEY) {
+      throw new Error('STRIPE_SECRET_KEY is not set');
+    }
+    stripeClientInstance = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      apiVersion: "2025-12-15.clover", // Latest API version as of Stripe SDK v20.0.0
+    });
+  }
+  return stripeClientInstance;
+}
 
 export const auth = betterAuth({
   appName: 'Better Auth Demo',
@@ -115,7 +126,7 @@ export const auth = betterAuth({
       },
     }),
     stripe({
-      stripeClient,
+      stripeClient: getStripeClient(),
       stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
       createCustomerOnSignUp: true,
       subscription: {
